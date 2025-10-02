@@ -6,11 +6,17 @@
 //
 
 import UIKit
+import VKID
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        
+        let vkId = VKID.shared
+        
+        return vkId.open(url: url)
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
