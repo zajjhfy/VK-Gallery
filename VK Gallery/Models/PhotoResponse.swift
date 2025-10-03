@@ -13,8 +13,8 @@ struct PhotoResponse: Codable {
 
 struct Response: Codable {
     let count: Int
-    let items: [Item]
-    let nextFrom: String
+    let items: [PhotoItem]
+    let nextFrom: String?  
 
     enum CodingKeys: String, CodingKey {
         case count, items
@@ -22,14 +22,16 @@ struct Response: Codable {
     }
 }
 
-struct Item: Codable {
-    let albumID, date, id, ownerID: Int
-    let sizes: [OrigPhoto]
-    let text: String
-    let userID: Int
-    let webViewToken: String
-    let hasTags: Bool
-    let origPhoto: OrigPhoto
+struct PhotoItem: Codable {
+    let albumID: Int
+    let date: Int
+    let id: Int
+    let ownerID: Int
+    let sizes: [PhotoSize]
+    let text: String?
+    let userID: Int?
+    let hasTags: Bool?
+    let origPhoto: PhotoSize?
 
     enum CodingKeys: String, CodingKey {
         case albumID = "album_id"
@@ -37,30 +39,14 @@ struct Item: Codable {
         case ownerID = "owner_id"
         case sizes, text
         case userID = "user_id"
-        case webViewToken = "web_view_token"
         case hasTags = "has_tags"
         case origPhoto = "orig_photo"
     }
 }
 
-struct OrigPhoto: Codable {
+struct PhotoSize: Codable {
     let height: Int
-    let type: TypeEnum
     let url: String
+    let type: String
     let width: Int
 }
-
-enum TypeEnum: String, Codable {
-    case base = "base"
-    case m = "m"
-    case o = "o"
-    case p = "p"
-    case q = "q"
-    case r = "r"
-    case s = "s"
-    case w = "w"
-    case x = "x"
-    case y = "y"
-    case z = "z"
-}
-

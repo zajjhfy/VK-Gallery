@@ -11,6 +11,8 @@ import VKID
 class MainContentVC: UIViewController, AlertPresentable {
     
     private let vkId = VKID.shared
+    
+    private var photos: [PhotoInfo] = []
     private var collectionView: UICollectionView!
 
     override func viewDidLoad() {
@@ -22,8 +24,14 @@ class MainContentVC: UIViewController, AlertPresentable {
     }
     
     private func getPhotos(){
+        // Если на предыдущем экране токен работал, а при переходе истек
+        if vkId.currentAuthorizedSession!.accessToken.isExpired {
+            presentAlert(in: self, with: "Сессия истекла. Войдите в аккаунт чтобы продолжить!")
+            
+            dismissVC()
+            return
+        }
         
-        //check for expiration
         let accessToken = vkId.currentAuthorizedSession!.accessToken.value
         
         RequestManager.shared.getAlbumPhotosRequest(with: accessToken){ [weak self] result in
@@ -31,8 +39,10 @@ class MainContentVC: UIViewController, AlertPresentable {
             
             switch result{
             case .success(let photos):
-                print("RESPONSE --- ---")
-                print(photos)
+                DispatchQueue.main.async{
+                    self.photos = photos
+                    self.collectionView.reloadData()
+                }
                 break
             case .failure(let error):
                 presentAlert(in: self, with: error.rawValue)
@@ -77,9 +87,10 @@ class MainContentVC: UIViewController, AlertPresentable {
         let layout = UICollectionViewFlowLayout()
         
         layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 12
+        layout.minimumLineSpacing = 6
+        layout.minimumInteritemSpacing = 3
         
-        let width: Double = (view.frame.width / 2) - 6
+        let width: Double = (view.frame.width / 2) - 3
         
         layout.itemSize = CGSize(width: width, height: width)
         
@@ -94,10 +105,9 @@ class MainContentVC: UIViewController, AlertPresentable {
 
 }
 
-
 extension MainContentVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let imageDetailVC = ImageDetailVC()
+        let imageDetailVC = ImageDetailVC(photoInfo: photos[indexPath.row])
         
         navigationController?.pushViewController(imageDetailVC, animated: true)
     }
@@ -105,13 +115,13 @@ extension MainContentVC: UICollectionViewDelegate {
 
 extension MainContentVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return photos.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.reuseId, for: indexPath) as! PhotoCell
         
-        photoCell.setImageView(with: "cat")
+        photoCell.setCell(with: photos[indexPath.row].imageUrl)
         return photoCell
     }
 }

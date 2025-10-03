@@ -28,8 +28,26 @@ class AuthorizationVC: UIViewController, AlertPresentable {
         setupAuthButton()
         setupAppTitle()
         
-        if vkId.currentAuthorizedSession != nil {
-            presentContentVC()
+        checkAuthorization()
+    }
+    
+    private func checkAuthorization(){
+        guard let session = vkId.currentAuthorizedSession else {
+            return
+        }
+        
+        if !session.accessToken.isExpired { presentContentVC() }
+        else {
+            session.getFreshAccessToken { [weak self] result in
+                guard let self = self else { return }
+                
+                switch result{
+                case .success:
+                    self.presentContentVC()
+                case .failure:
+                    self.presentAlert(in: self, with: "Время сессии истекло, пожалуйста авторизуйтесь вновь")
+                }
+            }
         }
     }
     

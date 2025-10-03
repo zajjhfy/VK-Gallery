@@ -39,17 +39,16 @@ final class RequestManager {
             do{
                 let jsonDecoder = JSONDecoder()
                 
-                if let error = try? jsonDecoder.decode(ErrorResponse.self, from: data){
-                    completion(.failure(.vkApiError))
-                    return
-                }
-                
+                // DEBUG
+//                let jsonString = String(data: data, encoding: .utf8)
+//                print(jsonString ?? "Неудачная конвертация")
+
                 let response = try jsonDecoder.decode(PhotoResponse.self, from: data)
                 
                 var photos: [PhotoInfo] = []
                 
                 for item in response.response.items {
-                    let photoInfo = PhotoInfo(imageUrl: item.origPhoto.url, postedAtDate: item.date.convertToStringDateFromTimestamp())
+                    let photoInfo = PhotoInfo(imageUrl: item.origPhoto?.url ?? "", postedAtDate: item.date.convertToStringDateFromTimestamp())
                     
                     photos.append(photoInfo)
                 }

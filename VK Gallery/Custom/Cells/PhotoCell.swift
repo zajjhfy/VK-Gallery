@@ -24,6 +24,7 @@ class PhotoCell: UICollectionViewCell {
     
     private func setup() {
         imageView = UIImageView()
+        imageView.image = UIImage(named: "placeholder-image")
         
         addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +39,7 @@ class PhotoCell: UICollectionViewCell {
         )
     }
     
-    func setImageView(with imageString: String){
-        imageView.image = UIImage(named: imageString)
+    func setCell(with imageString: String){
+        imageView.downloadImage(from: imageString)
     }
 }
