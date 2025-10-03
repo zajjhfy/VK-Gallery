@@ -18,6 +18,11 @@ class AuthorizationVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setup()
+    }
+    
+    private func setup(){
         view.backgroundColor = .systemBackground
         
         setupAlertController()
@@ -25,7 +30,7 @@ class AuthorizationVC: UIViewController {
         setupAuthButton()
         setupAppTitle()
         
-        if !vkId.authorizedSessions.isEmpty {
+        if vkId.currentAuthorizedSession != nil {
             presentContentVC()
         }
     }

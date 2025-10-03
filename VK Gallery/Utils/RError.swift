@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+enum RError: String, Error {
+    case requestError = "Request Error!"
+}
