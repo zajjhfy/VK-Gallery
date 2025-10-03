@@ -8,7 +8,7 @@
 import UIKit
 import VKID
 
-class MainContentVC: UIViewController {
+class MainContentVC: UIViewController, AlertPresentable {
     
     private let vkId = VKID.shared
     private var collectionView: UICollectionView!
@@ -26,13 +26,16 @@ class MainContentVC: UIViewController {
         //check for expiration
         let accessToken = vkId.currentAuthorizedSession!.accessToken.value
         
-        RequestManager.shared.getAlbumPhotosRequest(with: accessToken){ result in
+        RequestManager.shared.getAlbumPhotosRequest(with: accessToken){ [weak self] result in
+            guard let self = self else { return }
+            
             switch result{
-            case .success(let photoResponse):
+            case .success(let photos):
                 print("RESPONSE --- ---")
-                print(photoResponse.response.count)
+                print(photos)
                 break
-            case .failure(let _):
+            case .failure(let error):
+                presentAlert(in: self, with: error.rawValue)
                 break
             }
         }
@@ -91,9 +94,12 @@ class MainContentVC: UIViewController {
 
 }
 
+
 extension MainContentVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        return
+        let imageDetailVC = ImageDetailVC()
+        
+        navigationController?.pushViewController(imageDetailVC, animated: true)
     }
 }
 

@@ -12,11 +12,11 @@ final class RequestManager {
     
     func getAlbumPhotosRequest(
         with token: String,
-        completion: @escaping (Result<PhotoResponse, RError>) -> Void)
+        completion: @escaping (Result<[PhotoInfo], RError>) -> Void)
     {
         guard let url = URL(string: "https://api.vk.com/method/photos.get?owner_id=-128666765&album_id=266276915&access_token=\(token)&v=5.131")
         else {
-            completion(.failure(.requestError))
+            completion(.failure(.badUrl))
             return
         }
         
@@ -27,23 +27,37 @@ final class RequestManager {
             }
             
             if error != nil {
-                completion(.failure(.requestError))
+                completion(.failure(.someError))
                 return
             }
             
             guard let data = data else {
-                completion(.failure(.requestError))
+                completion(.failure(.emptyData))
                 return
             }
-            
+        
             do{
                 let jsonDecoder = JSONDecoder()
+                
+                if let error = try? jsonDecoder.decode(ErrorResponse.self, from: data){
+                    completion(.failure(.vkApiError))
+                    return
+                }
+                
                 let response = try jsonDecoder.decode(PhotoResponse.self, from: data)
                 
-                completion(.success(response))
+                var photos: [PhotoInfo] = []
+                
+                for item in response.response.items {
+                    let photoInfo = PhotoInfo(imageUrl: item.origPhoto.url, postedAtDate: item.date.convertToStringDateFromTimestamp())
+                    
+                    photos.append(photoInfo)
+                }
+                
+                completion(.success(photos))
             }
             catch{
-                completion(.failure(.requestError))
+                completion(.failure(.retrivingDataError))
                 return
             }
             

@@ -8,13 +8,12 @@
 import UIKit
 import VKID
 
-class AuthorizationVC: UIViewController {
+class AuthorizationVC: UIViewController, AlertPresentable {
     
     private let vkId = VKID.shared
     
     private let appTitle = UILabel()
     private let authButton = UIButton()
-    private let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +24,6 @@ class AuthorizationVC: UIViewController {
     private func setup(){
         view.backgroundColor = .systemBackground
         
-        setupAlertController()
         setupVKConfiguration()
         setupAuthButton()
         setupAppTitle()
@@ -42,7 +40,7 @@ class AuthorizationVC: UIViewController {
             try vkId.set(config: Configuration(appCredentials: credentials))
         }
         catch{
-            presentAlert(with: error.localizedDescription)
+            presentAlert(in: self, with: error.localizedDescription)
         }
     }
     
@@ -84,12 +82,6 @@ class AuthorizationVC: UIViewController {
         )
     }
     
-    private func setupAlertController(){
-        alertController.title = "Ошибка"
-        alertController.message = "Все плохо.."
-        alertController.addAction(UIAlertAction(title: "OK", style: .default))
-    }
-    
     private func presentContentVC(){
         DispatchQueue.main.async{ [weak self] in
             guard let self = self else { return }
@@ -102,25 +94,15 @@ class AuthorizationVC: UIViewController {
         }
     }
     
-    private func presentAlert(with message: String){
-        DispatchQueue.main.async{ [weak self] in
-            guard let self = self else { return }
-            
-            self.alertController.message = message
-            
-            self.present(alertController, animated: true)
-        }
-    }
-    
     @objc private func onAuthTap(){
         vkId.authorize(using: .newUIWindow){ [weak self] result in
             guard let self = self else { return }
             
             switch result{
-            case .success(let _):
+            case .success(_):
                 presentContentVC()
             case .failure(let error):
-                presentAlert(with: error.localizedDescription)
+                presentAlert(in: self, with: error.localizedDescription)
             }
         }
     }
