@@ -92,7 +92,7 @@ class MainContentVC: UIViewController, AlertPresentable {
         
         let width: Double = (view.frame.width / 2) - 3
         
-        layout.itemSize = CGSize(width: width, height: width)
+        layout.itemSize = CGSize(width: width, height: width/1.5)
         
         return layout
     }
