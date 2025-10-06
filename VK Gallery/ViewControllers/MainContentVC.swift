@@ -10,29 +10,49 @@ import VKID
 
 class MainContentVC: UIViewController, AlertPresentable {
     
-    private let vkId = VKID.shared
+    private var vkId: VKID!
     
     private var photos: [PhotoInfo] = []
     private var collectionView: UICollectionView!
-
+    
+    init(vkId: VKID){
+        super.init(nibName: nil, bundle: nil)
+        
+        self.vkId = vkId
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setup()
-        getPhotos()
         setupCollectionView()
+        getPhotos()
     }
     
     private func getPhotos(){
-        // Если на предыдущем экране токен работал, а при переходе истек
-        if vkId.currentAuthorizedSession!.accessToken.isExpired {
-            presentAlert(in: self, with: "Сессия истекла. Войдите в аккаунт чтобы продолжить!")
+        guard let session = vkId.currentAuthorizedSession else {
+            presentAlert(in: self, with: "Недействительная сессия. Войдите в аккаунт повторно")
             
             dismissVC()
             return
         }
         
-        let accessToken = vkId.currentAuthorizedSession!.accessToken.value
+        // Если на предыдущем экране токен работал, а при переходе истек
+        if session.accessToken.isExpired {
+            presentAlert(in: self, with: "Сессия истекла. Войдите в аккаунт повторно!")
+            
+            dismissVC()
+            return
+        }
+        
+        photos = []
+        collectionView.reloadData()
+        
+        let accessToken = session.accessToken.value
         
         RequestManager.shared.getAlbumPhotosRequest(with: accessToken){ [weak self] result in
             guard let self = self else { return }
@@ -40,7 +60,8 @@ class MainContentVC: UIViewController, AlertPresentable {
             switch result{
             case .success(let photos):
                 DispatchQueue.main.async{
-                    self.photos = photos
+                    let unique = Array(Set(photos))
+                    self.photos = unique
                     self.collectionView.reloadData()
                 }
                 break
@@ -98,16 +119,29 @@ class MainContentVC: UIViewController, AlertPresentable {
     }
     
     @objc private func dismissVC(){
-        vkId.currentAuthorizedSession?.logout(completion: {_ in })
-        
-        dismiss(animated: true)
+        vkId.currentAuthorizedSession?.logout{ [weak self] _ in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async{
+                self.dismiss(animated: true)
+            }
+        }
     }
 
 }
 
 extension MainContentVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let imageDetailVC = ImageDetailVC(photoInfo: photos[indexPath.row])
+        guard let item = collectionView.cellForItem(at: indexPath) as? PhotoCell else { return }
+        
+        guard let image = item.getImageIfDownloaded() else {
+            presentAlert(in: self, with: "Картинка грузится! Пожалуйста подождите")
+            return
+        }
+        
+        let dateInfo = photos[indexPath.row].postedAtDate
+        
+        let imageDetailVC = ImageDetailVC(dateStr: dateInfo, image: image)
         
         navigationController?.pushViewController(imageDetailVC, animated: true)
     }

@@ -12,6 +12,8 @@ class PhotoCell: UICollectionViewCell {
     
     private var imageView: UIImageView!
     
+    private var isImageDownloaded = false
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -39,7 +41,18 @@ class PhotoCell: UICollectionViewCell {
         )
     }
     
+    func getImageIfDownloaded() -> UIImage? {
+        if isImageDownloaded {
+            return imageView.image
+        }
+        else { return nil }
+    }
+    
     func setCell(with imageString: String){
-        imageView.downloadImage(from: imageString)
+        imageView.downloadImage(from: imageString){ [weak self] in
+            guard let self = self else { return }
+            
+            isImageDownloaded = true
+        }
     }
 }

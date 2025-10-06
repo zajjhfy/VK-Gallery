@@ -9,13 +9,14 @@ import UIKit
 
 class ImageDetailVC: UIViewController {
 
-    private var photo: PhotoInfo!
-    private var imageView: UIImageView!
+    private var dateStr = ""
+    private var imageView = UIImageView()
     
-    init(photoInfo: PhotoInfo){
+    init(dateStr: String, image: UIImage){
         super.init(nibName: nil, bundle: nil)
         
-        photo = photoInfo
+        self.dateStr = dateStr
+        imageView.image = image
     }
     
     required init?(coder: NSCoder) {
@@ -31,7 +32,7 @@ class ImageDetailVC: UIViewController {
     
     private func setup(){
         view.backgroundColor = .systemBackground
-        title = photo.postedAtDate
+        title = dateStr
         
         let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(shareImage))
         
@@ -39,7 +40,6 @@ class ImageDetailVC: UIViewController {
     }
     
     private func setupImageView(){
-        imageView = UIImageView()
         view.addSubview(imageView)
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -49,17 +49,15 @@ class ImageDetailVC: UIViewController {
                 imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
                 imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                imageView.heightAnchor.constraint(equalToConstant: 300)
+                imageView.heightAnchor.constraint(equalToConstant: 250)
             ]
         )
-        
-        imageView.downloadImage(from: photo.imageUrl)
     }
     
     @objc private func shareImage(){
-        let imageToShare = imageView.image
+        guard let image = imageView.image else { return }
         
-        let activityViewController = UIActivityViewController(activityItems: [imageToShare!], applicationActivities: nil)
+        let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         
         present(activityViewController, animated: true)
     }

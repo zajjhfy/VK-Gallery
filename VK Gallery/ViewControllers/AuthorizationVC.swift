@@ -21,14 +21,18 @@ class AuthorizationVC: UIViewController, AlertPresentable {
         setup()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        checkAuthorization()
+    }
+    
     private func setup(){
         view.backgroundColor = .systemBackground
         
         setupVKConfiguration()
         setupAuthButton()
         setupAppTitle()
-        
-        checkAuthorization()
     }
     
     private func checkAuthorization(){
@@ -86,7 +90,7 @@ class AuthorizationVC: UIViewController, AlertPresentable {
         appTitle.translatesAutoresizingMaskIntoConstraints = false
         
         appTitle.text = "VK Gallery"
-        appTitle.textColor = .black
+        appTitle.textColor = .label
         appTitle.font = .systemFont(ofSize: 45, weight: .bold)
         
         view.addSubview(appTitle)
@@ -104,7 +108,7 @@ class AuthorizationVC: UIViewController, AlertPresentable {
         DispatchQueue.main.async{ [weak self] in
             guard let self = self else { return }
             
-            let navController = UINavigationController(rootViewController: MainContentVC())
+            let navController = UINavigationController(rootViewController: MainContentVC(vkId: self.vkId))
             navController.modalPresentationStyle = .fullScreen
             navController.title = "VK Gallery"
             

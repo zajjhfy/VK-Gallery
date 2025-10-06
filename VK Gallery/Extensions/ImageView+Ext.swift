@@ -8,19 +8,25 @@
 import UIKit
 
 extension UIImageView {
-    func downloadImage(from urlString: String){
+    func downloadImage(from urlString: String, downloadSuccess: @escaping () -> Void){
         let cache = ImageCache.cache
         
         let cacheKey = NSString(string: urlString)
         
         if let image = cache.object(forKey: cacheKey) {
-            self.image = image
+            DispatchQueue.main.async{ [weak self] in
+                guard let self = self else { return }
+                
+                self.image = image
+                downloadSuccess()
+            }
+            
             return
         }
         
         guard let url = URL(string: urlString) else { return }
         
-        let task = URLSession.shared.dataTask(with: url){ [weak self] data, response, error in
+        URLSession.shared.dataTask(with: url){ [weak self] data, response, error in
             guard let self = self else { return }
             
             if let _ = error { return }
@@ -35,9 +41,11 @@ extension UIImageView {
             
             cache.setObject(image, forKey: cacheKey)
             
-            DispatchQueue.main.async { self.image = image }
-        }
-        
-        task.resume()
+            DispatchQueue.main.async{
+                self.image = image
+                downloadSuccess()
+            }
+            
+        }.resume()
     }
 }
