@@ -35,7 +35,7 @@ class MainContentVC: UIViewController, AlertPresentable {
     
     private func getPhotos(){
         guard let session = vkId.currentAuthorizedSession else {
-            presentAlert(in: self, with: "Недействительная сессия. Войдите в аккаунт повторно")
+            presentAlert(in: self, with: RError.VKError.expiredSession.rawValue)
             
             dismissVC()
             return
@@ -43,14 +43,11 @@ class MainContentVC: UIViewController, AlertPresentable {
         
         // Если на предыдущем экране токен работал, а при переходе истек
         if session.accessToken.isExpired {
-            presentAlert(in: self, with: "Сессия истекла. Войдите в аккаунт повторно!")
+            presentAlert(in: self, with: RError.VKError.expiredSession.rawValue)
             
             dismissVC()
             return
         }
-        
-        photos = []
-        collectionView.reloadData()
         
         let accessToken = session.accessToken.value
         
@@ -60,8 +57,7 @@ class MainContentVC: UIViewController, AlertPresentable {
             switch result{
             case .success(let photos):
                 DispatchQueue.main.async{
-                    let unique = Array(Set(photos))
-                    self.photos = unique
+                    self.photos = photos
                     self.collectionView.reloadData()
                 }
                 break
@@ -127,7 +123,6 @@ class MainContentVC: UIViewController, AlertPresentable {
             }
         }
     }
-
 }
 
 extension MainContentVC: UICollectionViewDelegate {
@@ -135,7 +130,9 @@ extension MainContentVC: UICollectionViewDelegate {
         guard let item = collectionView.cellForItem(at: indexPath) as? PhotoCell else { return }
         
         guard let image = item.getImageIfDownloaded() else {
-            presentAlert(in: self, with: "Картинка грузится! Пожалуйста подождите")
+            if item.error != nil { presentAlert(in: self, with: item.error!) }
+            else { presentAlert(in: self, with: RError.DownloadError.imageDownloadInProgress.rawValue) }
+            
             return
         }
         

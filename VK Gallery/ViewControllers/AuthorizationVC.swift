@@ -49,7 +49,7 @@ class AuthorizationVC: UIViewController, AlertPresentable {
                 case .success:
                     self.presentContentVC()
                 case .failure:
-                    self.presentAlert(in: self, with: "Время сессии истекло, пожалуйста авторизуйтесь вновь")
+                    self.presentAlert(in: self, with: RError.VKError.expiredSession.rawValue)
                 }
             }
         }

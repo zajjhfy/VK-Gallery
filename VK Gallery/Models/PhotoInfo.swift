@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PhotoInfo: Hashable {
+struct PhotoInfo {
     let imageUrl: String
     let postedAtDate: String
 }

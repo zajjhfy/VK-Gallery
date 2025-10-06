@@ -10,9 +10,11 @@ import UIKit
 class PhotoCell: UICollectionViewCell {
     static let reuseId = "PhotoCell"
     
-    private var imageView: UIImageView!
-    
+    private var imageView = UIImageView()
     private var isImageDownloaded = false
+    private var currentImageUrlString = ""
+    
+    var error: String?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,7 +27,6 @@ class PhotoCell: UICollectionViewCell {
     }
     
     private func setup() {
-        imageView = UIImageView()
         imageView.image = UIImage(named: "placeholder-image")
         
         addSubview(imageView)
@@ -41,6 +42,14 @@ class PhotoCell: UICollectionViewCell {
         )
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        imageView.image = UIImage(named: "placeholder-image")
+        isImageDownloaded = false
+        currentImageUrlString = ""
+    }
+    
     func getImageIfDownloaded() -> UIImage? {
         if isImageDownloaded {
             return imageView.image
@@ -49,10 +58,21 @@ class PhotoCell: UICollectionViewCell {
     }
     
     func setCell(with imageString: String){
-        imageView.downloadImage(from: imageString){ [weak self] in
+        currentImageUrlString = imageString
+        
+        RequestManager.shared.downloadImage(from: imageString){ [weak self] result in
             guard let self = self else { return }
             
-            isImageDownloaded = true
+            switch result{
+            case .success(let image):
+                if self.currentImageUrlString == imageString {
+                    self.imageView.image = image
+                    self.isImageDownloaded = true
+                }
+            case .failure(let error):
+                self.error = error.rawValue
+                break
+            }
         }
     }
 }
