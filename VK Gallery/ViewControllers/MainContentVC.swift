@@ -136,9 +136,9 @@ extension MainContentVC: UICollectionViewDelegate {
             return
         }
         
-        let dateInfo = photos[indexPath.row].postedAtDate
+        let photoInfo = photos[indexPath.row]
         
-        let imageDetailVC = ImageDetailVC(dateStr: dateInfo, image: image)
+        let imageDetailVC = ImageDetailVC(photoInfo: photoInfo, image: image)
         
         navigationController?.pushViewController(imageDetailVC, animated: true)
     }

@@ -14,7 +14,7 @@ final class RequestManager {
         with token: String,
         completion: @escaping (Result<[PhotoInfo], RError.FetchDataError>) -> Void)
     {
-        guard let url = URL(string: "https://api.vk.com/method/photos.get?owner_id=-128666765&album_id=266276915&access_token=\(token)&v=5.131")
+        guard let url = URL(string: "https://api.vk.com/method/photos.get?owner_id=-60154984&album_id=274932301&extended=1&access_token=\(token)&v=5.131")
         else {
             completion(.failure(.badUrl))
             return
@@ -48,7 +48,7 @@ final class RequestManager {
                 var photos: [PhotoInfo] = []
                 
                 for item in response.response.items {
-                    let photoInfo = PhotoInfo(imageUrl: item.origPhoto?.url ?? "", postedAtDate: item.date.convertToStringDateFromTimestamp())
+                    let photoInfo = PhotoInfo(imageId: item.id, imageUrl: item.origPhoto.url, postedAtDate: item.date.convertToStringDateFromTimestamp(), commentsCount: item.comments.count, likesCount: item.likes.count)
                     
                     photos.append(photoInfo)
                 }
@@ -59,6 +59,37 @@ final class RequestManager {
                 completion(.failure(.retrivingDataError))
                 return
             }
+            
+        }.resume()
+    }
+    
+    func getCommentsByPhotoId(in photoId: Int, with token: String){
+        guard let url = URL(string: "https://api.vk.com/method/photos.getComments?photo_id=\(photoId)&access_token=\(token)&v=5.131")
+        else {
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url){ data, response, error in
+            if let _ = error {
+                
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+                
+                return
+            }
+            
+            guard let data = data else {
+                
+                return
+            }
+            
+            let jsonDecoder = JSONDecoder()
+            
+            let jsonString = String(data: data, encoding: .utf8)
+            print(jsonString ?? "Неудачная конвертация")
+            
             
         }.resume()
     }

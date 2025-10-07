@@ -8,6 +8,9 @@
 import Foundation
 
 struct PhotoInfo {
+    let imageId: Int
     let imageUrl: String
     let postedAtDate: String
+    let commentsCount: Int
+    let likesCount: Int
 }
