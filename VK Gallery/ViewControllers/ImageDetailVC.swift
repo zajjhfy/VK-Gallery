@@ -7,22 +7,23 @@
 
 import UIKit
 
-class ImageDetailVC: UIViewController {
+class ImageDetailVC: UIViewController, AlertPresentable {
 
     private var photoInfo: PhotoInfo!
     private var imageView = UIImageView()
     private var likeButton = UIButton()
     private var commentsButton = UIButton()
     
+    private var imageIsNil = true
+    
     private var halfScreenWidth: CGFloat {
         return view.bounds.width / 2
     }
     
-    init(photoInfo: PhotoInfo, image: UIImage){
+    init(photoInfo: PhotoInfo){
         super.init(nibName: nil, bundle: nil)
         
         self.photoInfo = photoInfo
-        imageView.image = image
     }
     
     required init?(coder: NSCoder) {
@@ -92,6 +93,20 @@ class ImageDetailVC: UIViewController {
     }
     
     private func setupImageView(){
+        imageView.image = UIImage(named: "placeholder-image")
+        
+        RequestManager.shared.downloadImage(from: photoInfo.imageUrl){ [weak self] result in
+            guard let self = self else { return }
+            
+            switch result{
+            case .success(let image):
+                self.imageView.image = image
+                self.imageIsNil = false
+            case .failure(let error):
+                self.presentAlert(in: self, with: error.rawValue)
+            }
+        }
+        
         view.addSubview(imageView)
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -114,9 +129,12 @@ class ImageDetailVC: UIViewController {
     }
     
     @objc private func shareImage(){
-        guard let image = imageView.image else { return }
+        guard !imageIsNil else {
+            presentAlert(in: self, with: RError.ShareError.shareImageGeneralError.rawValue)
+            return
+        }
         
-        let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        let activityViewController = UIActivityViewController(activityItems: [imageView.image!], applicationActivities: nil)
         
         present(activityViewController, animated: true)
     }

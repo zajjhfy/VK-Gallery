@@ -127,18 +127,9 @@ class MainContentVC: UIViewController, AlertPresentable {
 
 extension MainContentVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let item = collectionView.cellForItem(at: indexPath) as? PhotoCell else { return }
-        
-        guard let image = item.getImageIfDownloaded() else {
-            if item.error != nil { presentAlert(in: self, with: item.error!) }
-            else { presentAlert(in: self, with: RError.DownloadError.imageDownloadInProgress.rawValue) }
-            
-            return
-        }
-        
         let photoInfo = photos[indexPath.row]
         
-        let imageDetailVC = ImageDetailVC(photoInfo: photoInfo, image: image)
+        let imageDetailVC = ImageDetailVC(photoInfo: photoInfo)
         
         navigationController?.pushViewController(imageDetailVC, animated: true)
     }

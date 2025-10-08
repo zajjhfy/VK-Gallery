@@ -14,8 +14,6 @@ class PhotoCell: UICollectionViewCell {
     private var isImageDownloaded = false
     private var currentImageUrlString = ""
     
-    var error: String?
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -69,8 +67,7 @@ class PhotoCell: UICollectionViewCell {
                     self.imageView.image = image
                     self.isImageDownloaded = true
                 }
-            case .failure(let error):
-                self.error = error.rawValue
+            case .failure(_):
                 break
             }
         }

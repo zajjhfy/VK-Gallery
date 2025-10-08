@@ -21,6 +21,9 @@ enum RError {
         case imageDownloadGeneralError = "Ошибка при скачивании картинки. Картинка либо не существует, либо недоступна"
         case imageDownloadInProgress = "Картинка грузится! Пожалуйста подождите"
     }
+    enum ShareError: String, Error {
+        case shareImageGeneralError = "Ошибка при попытке поделиться картинкой. Картинка либо грузится, либо недоступна"
+    }
     
     enum VKError: String, Error {
         case expiredSession = "Время сессии истекло, пожалуйста авторизуйтесь вновь"
