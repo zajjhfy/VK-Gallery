@@ -48,10 +48,12 @@ class ImageDetailVC: UIViewController {
     }
     
     private func setupLikeButton(){
-        likeButton.backgroundColor = .darkGray
+        likeButton.backgroundColor = .systemBackground
         likeButton.setImage(UIImage(systemName: SFSymbols.like), for: .normal)
         likeButton.setTitle("\(photoInfo.likesCount)", for: .normal)
-        likeButton.tintColor = .white
+        
+        likeButton.tintColor = .label
+        likeButton.setTitleColor(.label, for: .normal)
         
         view.addSubview(likeButton)
         likeButton.translatesAutoresizingMaskIntoConstraints = false
@@ -67,10 +69,12 @@ class ImageDetailVC: UIViewController {
     }
     
     private func setupCommentsButton(){
-        commentsButton.backgroundColor = .darkGray
+        commentsButton.backgroundColor = .systemBackground
         commentsButton.setImage(UIImage(systemName: SFSymbols.comment), for: .normal)
         commentsButton.setTitle("\(photoInfo.commentsCount)", for: .normal)
-        commentsButton.tintColor = .white
+        
+        commentsButton.tintColor = .label
+        commentsButton.setTitleColor(.label, for: .normal)
         
         commentsButton.addTarget(self, action: #selector(openComments), for: .touchUpInside)
         
@@ -104,6 +108,7 @@ class ImageDetailVC: UIViewController {
     
     @objc private func openComments(){
         let navVC = UINavigationController(rootViewController: CommentsVC(photoInfo: photoInfo))
+        navVC.modalPresentationStyle = .fullScreen
         
         present(navVC, animated: true)
     }

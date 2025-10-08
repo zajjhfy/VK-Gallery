@@ -17,6 +17,7 @@ class CommentCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
         
         setup()
     }
@@ -32,18 +33,18 @@ class CommentCell: UITableViewCell {
     }
     
     private func setupAuthorImage(){
-        authorImage.layer.cornerRadius = 10
+        authorImage.layer.cornerRadius = 20
         authorImage.clipsToBounds = true
         authorImage.image = UIImage(named: "placeholder-image")
         
         authorImage.translatesAutoresizingMaskIntoConstraints = false
         
-        addSubview(authorImage)
+        contentView.addSubview(authorImage)
         
         NSLayoutConstraint.activate(
             [
-                authorImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-                authorImage.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+                authorImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+                authorImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
                 authorImage.heightAnchor.constraint(equalToConstant: 50),
                 authorImage.widthAnchor.constraint(equalToConstant: 50)
             ]
@@ -60,35 +61,52 @@ class CommentCell: UITableViewCell {
         
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        addSubview(authorLabel)
+        contentView.addSubview(authorLabel)
         
         NSLayoutConstraint.activate(
             [
                 authorLabel.topAnchor.constraint(equalTo: authorImage.topAnchor),
                 authorLabel.leadingAnchor.constraint(equalTo: authorImage.trailingAnchor, constant: 8),
+                authorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 8),
                 authorLabel.heightAnchor.constraint(equalToConstant: 18)
             ]
         )
     }
     
     private func setupCommentLabel(){
-        commentLabel.text = "я позадавал кучу вопросов чату гпт, попробовал проверять респонс на уникальные данные, короче, ошибка поидее в том, что асинхронность тупая блин из за того задачи могу завершаться в непредсказуемое время. При переиспользовании ячейки, задача 1 может завершиться позже чем задача 2, из за этого ставится в ячейку уже существующее в коллекции фото"
         commentLabel.font = .systemFont(ofSize: 14)
         commentLabel.numberOfLines = 0
-        commentLabel.lineBreakMode = .byClipping
+        commentLabel.lineBreakMode = .byWordWrapping
         
         commentLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        addSubview(commentLabel)
+        contentView.addSubview(commentLabel)
         
         NSLayoutConstraint.activate(
             [
                 commentLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 4),
                 commentLabel.leadingAnchor.constraint(equalTo: authorLabel.leadingAnchor),
-                commentLabel.heightAnchor.constraint(equalToConstant: 18)
+                commentLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+                commentLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
             ]
         )
     }
     
+    func setCell(comment: Comment){
+        authorLabel.text = comment.authorLabel
+        commentLabel.text = comment.authorComment
+        
+        RequestManager.shared.downloadImage(from: comment.authorImage){ [weak self] result in
+            guard let self = self else { return }
+            
+            switch result{
+            case .success(let image):
+                authorImage.image = image
+                break
+            case .failure(_):
+                break
+            }
+        }
+    }
 
 }

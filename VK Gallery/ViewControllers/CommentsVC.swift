@@ -12,6 +12,7 @@ class CommentsVC: UIViewController {
     
     private var photoInfo: PhotoInfo!
     private var tableView: UITableView!
+    private let mockData = MockComments.comments
     
     init(photoInfo: PhotoInfo){
         super.init(nibName: nil, bundle: nil)
@@ -24,18 +25,10 @@ class CommentsVC: UIViewController {
 
         setup()
         setupTableView()
-        getComments()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func getComments(){
-        let vkId = VKID.shared
-        let token = vkId.currentAuthorizedSession?.accessToken.value ?? ""
-        
-        RequestManager.shared.getCommentsByPhotoId(in: photoInfo.imageId, with: token)
     }
     
     private func setup(){
@@ -44,18 +37,22 @@ class CommentsVC: UIViewController {
         
         let returnButton = UIBarButtonItem(title: "Назад", style: .done, target: self, action: #selector(dismissVC))
         
-        navigationItem.leftBarButtonItem = returnButton
+        navigationItem.rightBarButtonItem = returnButton
     }
     
     private func setupTableView(){
         tableView = UITableView(frame: view.bounds)
         
-        tableView.rowHeight = 80
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 100
+        
         tableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.reuseId)
         
         view.addSubview(tableView)
         
         tableView.dataSource = self
+        
+        tableView.reloadData()
     }
     
     @objc private func dismissVC() {
@@ -66,12 +63,13 @@ class CommentsVC: UIViewController {
 
 extension CommentsVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return mockData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CommentCell.reuseId) as! CommentCell
         
+        cell.setCell(comment: mockData[indexPath.row])
         return cell
     }
 }

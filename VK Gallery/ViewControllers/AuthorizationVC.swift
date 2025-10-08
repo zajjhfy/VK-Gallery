@@ -117,9 +117,7 @@ class AuthorizationVC: UIViewController, AlertPresentable {
     }
     
     @objc private func onAuthTap(){
-        let authConfig = AuthConfiguration(scope: Scope("photos"))
-        
-        vkId.authorize(with: authConfig, using: .newUIWindow){ [weak self] result in
+        vkId.authorize(using: .newUIWindow){ [weak self] result in
             guard let self = self else { return }
             
             switch result{
