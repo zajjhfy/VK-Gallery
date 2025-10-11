@@ -10,6 +10,8 @@ import UIKit
 final class RequestManager {
     static let shared = RequestManager()
     
+    private init() { }
+    
     func getAlbumPhotosRequest(
         with token: String,
         completion: @escaping (Result<[PhotoInfo], RError.FetchDataError>) -> Void)

@@ -8,17 +8,16 @@
 import UIKit
 import VKID
 
+#warning("nice tab bar animation?")
 class MainContentVC: UIViewController, AlertPresentable {
     
-    private var vkId: VKID!
+    private var vkId = VKID.shared
     
     private var photos: [PhotoInfo] = []
     private var collectionView: UICollectionView!
     
-    init(vkId: VKID){
+    init(){
         super.init(nibName: nil, bundle: nil)
-        
-        self.vkId = vkId
     }
     
     required init?(coder: NSCoder) {
@@ -31,6 +30,13 @@ class MainContentVC: UIViewController, AlertPresentable {
         setup()
         setupCollectionView()
         getPhotos()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.prefersLargeTitles = false
+        tabBarController?.tabBar.isHidden = false
     }
     
     private func getPhotos(){
@@ -78,7 +84,7 @@ class MainContentVC: UIViewController, AlertPresentable {
     }
     
     private func setupCollectionView(){
-        let layout = getCollectionViewLayout()
+        let layout = UIHelper.getCollectionViewLayout(for: view)
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.reuseId)
@@ -100,26 +106,12 @@ class MainContentVC: UIViewController, AlertPresentable {
         )
     }
     
-    private func getCollectionViewLayout() -> UICollectionViewFlowLayout{
-        let layout = UICollectionViewFlowLayout()
-        
-        layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 6
-        layout.minimumInteritemSpacing = 3
-        
-        let width: Double = (view.frame.width / 2) - 3
-        
-        layout.itemSize = CGSize(width: width, height: width/1.5)
-        
-        return layout
-    }
-    
     @objc private func dismissVC(){
-        vkId.currentAuthorizedSession?.logout{ [weak self] _ in
-            guard let self = self else { return }
-            
+        vkId.currentAuthorizedSession?.logout{ _ in
             DispatchQueue.main.async{
-                self.dismiss(animated: true)
+                let scene = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
+                
+                scene.changeRootViewController(.authorization)
             }
         }
     }

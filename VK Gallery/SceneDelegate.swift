@@ -6,11 +6,11 @@
 //
 
 import UIKit
+import VKID
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -20,7 +20,49 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = windowScene
         window?.rootViewController = AuthorizationVC()
         window?.makeKeyAndVisible()
+    }
+    
+    #warning("TODO: nice animation on main -> authorization")
+    func changeRootViewController(_ rootController: RootController) {
+        switch rootController{
+        case .authorization:
+            animateRootViewControllerChange(createAuthorizationVC())
+        case .mainContent:
+            animateRootViewControllerChange(createMainContentRootVC())
+        }
+    }
+    
+    private func animateRootViewControllerChange(_ viewController: UIViewController) {
+        UIView.transition(with: window!, duration: 0.4, options: .curveEaseInOut, animations: { [weak self] in
+            guard let self = self else { return }
+            
+            self.window?.rootViewController = viewController
+        })
+    }
+    
+    private func createMainContentRootVC() -> UITabBarController {
+        let tabBarVC = UITabBarController()
+        tabBarVC.viewControllers = [createMainContentNavVC(), createFavoritesNavVC()]
         
+        return tabBarVC
+    }
+    
+    private func createMainContentNavVC() -> UINavigationController {
+        let navVc = UINavigationController(rootViewController: MainContentVC())
+        navVc.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
+        
+        return navVc
+    }
+    
+    private func createFavoritesNavVC() -> UINavigationController {
+        let navVc = UINavigationController(rootViewController: FavoritesVC())
+        navVc.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 1)
+        
+        return navVc
+    }
+    
+    private func createAuthorizationVC() -> AuthorizationVC {
+        return AuthorizationVC()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

@@ -9,5 +9,8 @@ import Foundation
 
 enum SFSymbols {
     static let like = "heart"
+    static let share = "square.and.arrow.up"
     static let comment = "bubble.left.and.text.bubble.right"
+    static let favorites = "star"
+    static let favoritesFill = "star.fill"
 }

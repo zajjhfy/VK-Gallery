@@ -10,9 +10,11 @@ import UIKit
 class ImageDetailVC: UIViewController, AlertPresentable {
 
     private var photoInfo: PhotoInfo!
-    private var imageView = UIImageView()
-    private var likeButton = UIButton()
-    private var commentsButton = UIButton()
+    private let imageView = UIImageView()
+    private let likeButton = UIButton()
+    private let commentsButton = UIButton()
+    
+    private var favoritesBarButtonItem = UIBarButtonItem()
     
     private var imageIsNil = true
     
@@ -24,6 +26,12 @@ class ImageDetailVC: UIViewController, AlertPresentable {
         super.init(nibName: nil, bundle: nil)
         
         self.photoInfo = photoInfo
+    }
+    
+    init(photo: Photo){
+        super.init(nibName: nil, bundle: nil)
+        
+        photoInfo = PhotoInfo(imageId: Int(photo.id), imageUrl: photo.url!, postedAtDate: photo.postedAt!, commentsCount: Int(photo.commentsCount), likesCount: Int(photo.likesCount))
     }
     
     required init?(coder: NSCoder) {
@@ -39,13 +47,28 @@ class ImageDetailVC: UIViewController, AlertPresentable {
         setup()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.prefersLargeTitles = false
+        tabBarController?.tabBar.isHidden = true
+    }
+    
     private func setup(){
         view.backgroundColor = .systemBackground
         title = photoInfo.postedAtDate
         
-        let shareButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(shareImage))
+        setupBarButtons()
+    }
+    
+    private func setupBarButtons() {
+        let photo = PersistentManager.shared.getPhoto(photoInfo.imageId)
         
-        navigationItem.rightBarButtonItem = shareButton
+        let shareBarButtonItem = UIBarButtonItem(image: UIImage(systemName: SFSymbols.share), style: .plain, target: self, action: #selector(shareImage))
+        
+        favoritesBarButtonItem = UIBarButtonItem(image: UIImage(systemName: photo != nil ? SFSymbols.favoritesFill : SFSymbols.favorites), style: .plain, target: self, action: #selector(addToFavorites))
+        
+        navigationItem.rightBarButtonItems = [shareBarButtonItem, favoritesBarButtonItem]
     }
     
     private func setupLikeButton(){
@@ -137,6 +160,19 @@ class ImageDetailVC: UIViewController, AlertPresentable {
         let activityViewController = UIActivityViewController(activityItems: [imageView.image!], applicationActivities: nil)
         
         present(activityViewController, animated: true)
+    }
+    
+    @objc private func addToFavorites(){
+        let didCreate = PersistentManager.shared.createPhoto(photoInfo: photoInfo)
+        
+        // disappears
+        if didCreate {
+            favoritesBarButtonItem.image = UIImage(systemName: SFSymbols.favoritesFill)
+        } else {
+            _ = PersistentManager.shared.deletePhoto(Int32(photoInfo.imageId))
+            favoritesBarButtonItem.image = UIImage(systemName: SFSymbols.favorites)
+        }
+        
     }
 
 }

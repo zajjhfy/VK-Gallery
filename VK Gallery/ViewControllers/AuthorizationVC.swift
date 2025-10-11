@@ -105,14 +105,10 @@ class AuthorizationVC: UIViewController, AlertPresentable {
     }
     
     private func presentContentVC(){
-        DispatchQueue.main.async{ [weak self] in
-            guard let self = self else { return }
+        DispatchQueue.main.async{
+            let scene = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
             
-            let navController = UINavigationController(rootViewController: MainContentVC(vkId: self.vkId))
-            navController.modalPresentationStyle = .fullScreen
-            navController.title = "VK Gallery"
-            
-            self.present(navController, animated: true)
+            scene.changeRootViewController(.mainContent)
         }
     }
     

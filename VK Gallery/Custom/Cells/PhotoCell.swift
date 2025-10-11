@@ -48,13 +48,6 @@ class PhotoCell: UICollectionViewCell {
         currentImageUrlString = ""
     }
     
-    func getImageIfDownloaded() -> UIImage? {
-        if isImageDownloaded {
-            return imageView.image
-        }
-        else { return nil }
-    }
-    
     func setCell(with imageString: String){
         currentImageUrlString = imageString
         
