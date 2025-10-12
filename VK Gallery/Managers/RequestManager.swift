@@ -65,37 +65,6 @@ final class RequestManager {
         }.resume()
     }
     
-    func getCommentsByPhotoId(in photoId: Int, with token: String){
-        guard let url = URL(string: "https://api.vk.com/method/photos.getComments?photo_id=\(photoId)&access_token=\(token)&v=5.131")
-        else {
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url){ data, response, error in
-            if let _ = error {
-                
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-                
-                return
-            }
-            
-            guard let data = data else {
-                
-                return
-            }
-            
-            let jsonDecoder = JSONDecoder()
-            
-            let jsonString = String(data: data, encoding: .utf8)
-            print(jsonString ?? "Неудачная конвертация")
-            
-            
-        }.resume()
-    }
-    
     func downloadImage(from urlString: String, completion: @escaping (Result<UIImage, RError.DownloadError>) -> Void){
         let cache = ImageCache.cache
         

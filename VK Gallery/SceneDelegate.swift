@@ -18,25 +18,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         
         window?.windowScene = windowScene
-        window?.rootViewController = AuthorizationVC()
+        window?.rootViewController = createAuthorizationRootVC()
         window?.makeKeyAndVisible()
     }
     
-    #warning("TODO: nice animation on main -> authorization")
     func changeRootViewController(_ rootController: RootController) {
         switch rootController{
         case .authorization:
-            animateRootViewControllerChange(createAuthorizationVC())
+            changeRootVCWithAnimation(createAuthorizationRootVC(), with: .transitionCrossDissolve)
         case .mainContent:
-            animateRootViewControllerChange(createMainContentRootVC())
+            changeRootVCWithAnimation(createMainContentRootVC(), with: .curveEaseInOut)
         }
     }
     
-    private func animateRootViewControllerChange(_ viewController: UIViewController) {
-        UIView.transition(with: window!, duration: 0.4, options: .curveEaseInOut, animations: { [weak self] in
-            guard let self = self else { return }
-            
-            self.window?.rootViewController = viewController
+    private func changeRootVCWithAnimation(_ viewController: UIViewController, with animation: UIView.AnimationOptions){
+        guard let window = window else { return }
+        
+        UIView.transition(with: window, duration: 0.4, options: animation, animations: {
+            window.rootViewController = viewController
         })
     }
     
@@ -61,7 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return navVc
     }
     
-    private func createAuthorizationVC() -> AuthorizationVC {
+    private func createAuthorizationRootVC() -> AuthorizationVC {
         return AuthorizationVC()
     }
 

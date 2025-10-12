@@ -43,7 +43,7 @@ class MainContentVC: UIViewController, AlertPresentable {
         guard let session = vkId.currentAuthorizedSession else {
             presentAlert(in: self, with: RError.VKError.expiredSession.rawValue)
             
-            dismissVC()
+            changeRootToAuthorization()
             return
         }
         
@@ -51,7 +51,7 @@ class MainContentVC: UIViewController, AlertPresentable {
         if session.accessToken.isExpired {
             presentAlert(in: self, with: RError.VKError.expiredSession.rawValue)
             
-            dismissVC()
+            changeRootToAuthorization()
             return
         }
         
@@ -78,7 +78,7 @@ class MainContentVC: UIViewController, AlertPresentable {
         view.backgroundColor = .systemBackground
         title = "VK Gallery"
         
-        let exitButton = UIBarButtonItem(title: "Выход", style: .done, target: self, action: #selector(dismissVC))
+        let exitButton = UIBarButtonItem(title: "Выход", style: .done, target: self, action: #selector(changeRootToAuthorization))
         
         navigationItem.rightBarButtonItem = exitButton
     }
@@ -106,7 +106,7 @@ class MainContentVC: UIViewController, AlertPresentable {
         )
     }
     
-    @objc private func dismissVC(){
+    @objc private func changeRootToAuthorization(){
         vkId.currentAuthorizedSession?.logout{ _ in
             DispatchQueue.main.async{
                 let scene = UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate
