@@ -31,6 +31,7 @@ final class FilterMenu {
         configureMenu(menuTitle: title)
         
         self.delegate = delegate
+        delegate.didInitDefaultStates(menuState: currentMenuState, sortOption: currentSortOption)
         delegate.didUpdateMenu(menu: menu)
     }
     
@@ -50,17 +51,17 @@ final class FilterMenu {
     
     private func configureCategoriesActions() -> [UIAction] {
         return [
-            createAction(stateInfo: .recent, symbol: SFSymbols.FilterMenuSymbols.mock),
-            createAction(stateInfo: .datePublished, symbol: SFSymbols.FilterMenuSymbols.mock),
-            createAction(stateInfo: .likes, symbol: SFSymbols.FilterMenuSymbols.mock),
-            createAction(stateInfo: .comments, symbol: SFSymbols.FilterMenuSymbols.mock)
+            createAction(stateInfo: .recent, symbol: SFSymbols.FilterMenuSymbols.recent),
+            createAction(stateInfo: .datePublished, symbol: SFSymbols.FilterMenuSymbols.datePublished),
+            createAction(stateInfo: .likes, symbol: SFSymbols.like),
+            createAction(stateInfo: .comments, symbol: SFSymbols.comment)
         ]
     }
     
     private func configureSortActions() -> [UIAction] {
         return [
-            createAction(sortInfo: .ascending, symbol: SFSymbols.FilterMenuSymbols.mock),
-            createAction(sortInfo: .descending, symbol: SFSymbols.FilterMenuSymbols.mock),
+            createAction(sortInfo: .ascending, symbol: SFSymbols.FilterMenuSymbols.ascending),
+            createAction(sortInfo: .descending, symbol: SFSymbols.FilterMenuSymbols.descending),
         ]
     }
     
@@ -70,7 +71,8 @@ final class FilterMenu {
             
             if action.state == .on { return }
             
-            changeMenuState(with: stateInfo)
+            currentMenuState = stateInfo
+            changeState()
         }
         
         return action
@@ -82,7 +84,8 @@ final class FilterMenu {
             
             if action.state == .on { return }
             
-            changeSortOption(with: sortInfo)
+            currentSortOption = sortInfo
+            changeState()
         }
         
         return action
@@ -96,25 +99,18 @@ final class FilterMenu {
         delegate.didUpdateMenu(menu: menu)
     }
     
-    private func changeMenuState(with state: MenuState) {
-        currentMenuState = state
+    private func changeState() {
         updateMenu()
-        delegate.didChangeMenuState(with: state)
-    }
-    
-    private func changeSortOption(with option: SortBy) {
-        currentSortOption = option
-        updateMenu()
-        delegate.didChangeSortOption(with: option)
+        delegate.didChangeState(with: currentMenuState, sortOption: currentSortOption)
     }
     
 }
 
 protocol FilterMenuDelegate {
-    func didChangeMenuState(with state: FilterMenu.MenuState)
+    func didChangeState(with state: FilterMenu.MenuState, sortOption: FilterMenu.SortBy)
     
     func didUpdateMenu(menu: UIMenu)
     
-    func didChangeSortOption(with option: FilterMenu.SortBy)
+    func didInitDefaultStates(menuState: FilterMenu.MenuState, sortOption: FilterMenu.SortBy)
 }
 

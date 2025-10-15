@@ -17,6 +17,7 @@ extension Photo {
     @NSManaged public var url: String?
     @NSManaged public var likesCount: Int32
     @NSManaged public var commentsCount: Int32
+    @NSManaged public var date: Date?
 
 }
 

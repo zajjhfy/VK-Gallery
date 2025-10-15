@@ -15,6 +15,10 @@ enum SFSymbols {
     static let favoritesFill = "star.fill"
     
     enum FilterMenuSymbols {
-        static let mock = "plus"
+        static let filter = "line.3.horizontal.decrease.circle"
+        static let recent = "clock"
+        static let datePublished = "calendar"
+        static let descending = "arrowtriangle.down.circle"
+        static let ascending = "arrowtriangle.up.circle"
     }
 }

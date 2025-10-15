@@ -165,7 +165,6 @@ class ImageDetailVC: UIViewController, AlertPresentable {
     @objc private func addToFavorites(){
         let didCreate = PersistentManager.shared.createPhoto(photoInfo: photoInfo)
         
-        // disappears
         if didCreate {
             favoritesBarButtonItem.image = UIImage(systemName: SFSymbols.favoritesFill)
         } else {
