@@ -95,6 +95,19 @@ final class PersistentManager {
         }
     }
     
+    func getPhotos(by filter: NSPredicate) -> [Photo] {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
+        request.predicate = filter
+        
+        do{
+            let photos = try context.fetch(request) as! [Photo]
+            return photos
+        } catch {
+            print(error.localizedDescription)
+            return []
+        }
+    }
+    
     func deletePhoto(_ id: Int32) -> Bool {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
         request.predicate = NSPredicate(format: "id == %d", id)

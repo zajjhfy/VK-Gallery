@@ -7,6 +7,7 @@
 
 import UIKit
 
+#warning("if no data display something")
 class FavoritesVC: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
@@ -23,6 +24,8 @@ class FavoritesVC: UIViewController {
         return collectionView
     }()
     
+    private var filterMenu: FilterMenu!
+    
     private var photos: [Photo] = []
     
     init(){
@@ -34,7 +37,9 @@ class FavoritesVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Favorites"
-
+        
+        filterMenu = FilterMenu(title: "Favorites", delegate: self)
+        
         view.addSubview(collectionView)
     }
     
@@ -51,6 +56,7 @@ class FavoritesVC: UIViewController {
         photos = PersistentManager.shared.getPhotos()
         collectionView.reloadData()
     }
+    
 }
 
 extension FavoritesVC: UICollectionViewDelegate {
@@ -72,6 +78,20 @@ extension FavoritesVC: UICollectionViewDataSource {
         cell.setCell(with: photos[indexPath.row].url!)
         
         return cell
+    }
+}
+
+extension FavoritesVC: FilterMenuDelegate {
+    func didChangeSortOption(with option: FilterMenu.SortBy) {
+        print(option.rawValue)
+    }
+    
+    func didUpdateMenu(menu: UIMenu) {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .add, primaryAction: nil, menu: menu)
+    }
+    
+    func didChangeMenuState(with state: FilterMenu.MenuState) {
+        print(state.rawValue)
     }
 }
 
