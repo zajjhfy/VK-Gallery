@@ -92,6 +92,11 @@ extension FavoritesVC: FilterMenuDelegate {
     }
     
     func didUpdateMenu(menu: UIMenu) {
+        if navigationItem.rightBarButtonItem?.menu != nil {
+            navigationItem.rightBarButtonItem?.menu = menu
+            return
+        }
+        
         let button = UIBarButtonItem(image: UIImage(systemName: SFSymbols.FilterMenuSymbols.filter), primaryAction: nil, menu: menu)
         
         navigationItem.rightBarButtonItem = button

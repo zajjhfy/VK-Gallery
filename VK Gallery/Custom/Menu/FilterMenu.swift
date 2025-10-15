@@ -28,9 +28,10 @@ final class FilterMenu {
     private var menu: UIMenu!
     
     init(title: String, delegate: FilterMenuDelegate) {
+        self.delegate = delegate
+        
         configureMenu(menuTitle: title)
         
-        self.delegate = delegate
         delegate.didInitDefaultStates(menuState: currentMenuState, sortOption: currentSortOption)
         delegate.didUpdateMenu(menu: menu)
     }
