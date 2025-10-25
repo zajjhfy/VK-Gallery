@@ -24,6 +24,8 @@ final class FilterMenu {
     private var currentMenuState: MenuState = .recent
     private var currentSortOption: SortBy = .descending
     
+    // TODO: Утечка памяти + форс анрап. Мы с тобой не обсуждали это, не знаю читал ли ты что-то про утечки памяти. Но как ты думаешь,
+    // есть ли здесб проблема? (почитай про утечки памяти)
     private var delegate: FilterMenuDelegate!
     private var menu: UIMenu!
     
@@ -35,6 +37,10 @@ final class FilterMenu {
         delegate.didInitDefaultStates(menuState: currentMenuState, sortOption: currentSortOption)
         delegate.didUpdateMenu(menu: menu)
     }
+    
+    // TODO: Все приватные функции можешь выносить в отдельный extension, либо сделать отдельную структурку/класс
+    // которая будет делать что нужно. У тебя тут методы прямо связаны друг с другом (конфигурация и создание меню).
+    // Соответственно либо можно сделать extension, либо MenuConfigurator
     
     private func configureMenu(menuTitle: String){
         let children = configureChildren()
@@ -67,7 +73,13 @@ final class FilterMenu {
     }
     
     private func createAction(stateInfo: MenuState, symbol: String) -> UIAction {
-        let action = UIAction(title: stateInfo.rawValue, image: UIImage(systemName: symbol)!, state: stateInfo.rawValue == currentMenuState.rawValue ? .on : .off){ [weak self] action in
+        let action = UIAction(title: stateInfo.rawValue,
+                              image: UIImage(systemName: symbol)!,
+                              state: stateInfo.rawValue == currentMenuState.rawValue ? .on : .off) { [weak self] action in
+            
+            // TODO: Не помню с какой версии swift, но можно не писать self = self, можно просто
+            // guard let self else { return }
+            
             guard let self = self else { return }
             
             if action.state == .on { return }
@@ -80,7 +92,13 @@ final class FilterMenu {
     }
     
     private func createAction(sortInfo: SortBy, symbol: String) -> UIAction {
-        let action = UIAction(title: sortInfo.rawValue, image: UIImage(systemName: symbol)!, state: sortInfo.rawValue == currentSortOption.rawValue ? .on : .off){ [weak self] action in
+        let action = UIAction(title: sortInfo.rawValue,
+                              image: UIImage(systemName: symbol)!,
+                              state: sortInfo.rawValue == currentSortOption.rawValue ? .on : .off) { [weak self] action in
+            
+            // TODO: Не помню с какой версии swift, но можно не писать self = self, можно просто
+            // guard let self else { return }
+            
             guard let self = self else { return }
             
             if action.state == .on { return }
@@ -106,6 +124,8 @@ final class FilterMenu {
     }
     
 }
+
+// TODO: Протоколы убирай в отдельные файлы или наверх, чтобы они не валялись где-то не видно где
 
 protocol FilterMenuDelegate {
     func didChangeState(with state: FilterMenu.MenuState, sortOption: FilterMenu.SortBy)

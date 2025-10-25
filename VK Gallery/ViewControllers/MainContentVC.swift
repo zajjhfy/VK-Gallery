@@ -9,6 +9,7 @@ import UIKit
 import VKID
 
 #warning("nice tab bar animation?")
+// TODO: final class пишешь по-умолчанию, если надо исправляем (читаем про диспетчиризацию)
 class MainContentVC: UIViewController, AlertPresentable {
     
     private var vkId = VKID.shared

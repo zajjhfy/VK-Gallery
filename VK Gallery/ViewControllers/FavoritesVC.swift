@@ -8,8 +8,9 @@
 import UIKit
 
 #warning("if no data display something")
+// TODO: final class пишешь по-умолчанию, если надо исправляем (читаем про диспетчиризацию)
 class FavoritesVC: UIViewController {
-    
+
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.getCollectionViewLayout(for: view))
         
@@ -24,6 +25,8 @@ class FavoritesVC: UIViewController {
         return collectionView
     }()
     
+    // TODO: Утечка памяти + форс анрап. Мы с тобой не обсуждали это, не знаю читал ли ты что-то про утечки памяти. Но как ты думаешь,
+    // есть ли здесб проблема? (почитай про утечки памяти)
     private var filterMenu: FilterMenu!
     private var photos: [Photo] = []
     
@@ -92,6 +95,9 @@ extension FavoritesVC: FilterMenuDelegate {
     }
     
     func didUpdateMenu(menu: UIMenu) {
+        // TODO: Если ты делаешь проверку после которой нужно сразу выйти из метода/функции, то
+        // используй guard ... else { return } такая конструкция всегда подразуевает какое-то условие или блок кода, который
+        // что-то вернет
         if navigationItem.rightBarButtonItem?.menu != nil {
             navigationItem.rightBarButtonItem?.menu = menu
             return

@@ -7,6 +7,7 @@
 
 import UIKit
 
+// TODO: final class пишешь по-умолчанию, если надо исправляем (читаем про диспетчиризацию)
 class ImageDetailVC: UIViewController, AlertPresentable {
 
     private var photoInfo: PhotoInfo!

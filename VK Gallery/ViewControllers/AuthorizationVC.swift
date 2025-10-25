@@ -8,6 +8,7 @@
 import UIKit
 import VKID
 
+// TODO: final class пишешь по-умолчанию, если надо исправляем (читаем про диспетчиризацию)
 class AuthorizationVC: UIViewController, AlertPresentable {
     
     private let vkId = VKID.shared
